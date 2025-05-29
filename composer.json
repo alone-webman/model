@@ -1,0 +1,22 @@
+{
+  "name":"alone-webman/model",
+  "type":"library",
+  "license":"MIT",
+  "version":"1.0.0",
+  "description":"model生成和sql备份还原",
+  "autoload":{
+    "psr-4":{
+      "AloneWebMan\\Model\\":"src"
+    },
+    "files":[
+      "function.php"
+    ]
+  },
+  "require":{
+    "php":">=8.0"
+  },
+  "require-dev":{
+    "webman/database":"^2.1",
+    "webman/console":"^2.1"
+  }
+}
