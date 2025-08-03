@@ -57,7 +57,7 @@ return [
          * 类要使用trait
          */
         'trait'     => [
-            '\AloneWebMan\model\ModelHelper', //自带可使用db
+            '\AloneWebMan\Model\ModelHelper', //自带可使用db
         ]
     ],
 
