@@ -131,6 +131,7 @@ class Helper {
                 $classCode .= "namespace $namespace\\$keyName;\r\n\r\n";
                 $classCode .= $property;
                 $classCode .= "class $tableTab extends $aloneName\\$aloneTab {\r\n";
+                $classCode .= "    protected           \$guarded  = [];\r\n";
                 $classCode .= "    public              \$primaryKey  = \"id\";\r\n";
                 $classCode .= "    public              \$timestamps  = " . ($timestamps ? "true" : "false") . ";\r\n";
                 $classCode .= "    public              \$dateFormat  = \"Y-m-d H:i:s\";\r\n";
