@@ -83,14 +83,42 @@ trait ModelHelper {
     }
 
     /**
+     * 自动单多库事务
+     * @param callable               $callable
+     * @param array|string|bool|null $model model::class,默认当前库事务,当前库可作$throw参数
+     * @param bool|null              $throw
+     *                                      true      成功:return 执行包;   错误: throw new 报错信息
+     *                                      false     成功:return false;   错误: return    报错信息
+     *                                      null      成功:return 执行包;   错误: return    报错信息
+     * @return mixed
+     */
+    public static function work(callable $callable, array|string|bool|null $model = null, bool|null $throw = false): mixed {
+        $isValidModelClass = is_array($model) || is_string($model);
+        $throw = $isValidModelClass ? $throw : $model;
+        return static::affair(function($begin, $submit, $roll) use ($callable, $throw) {
+            $begin();
+            try {
+                $res = $callable();
+                $submit();
+                return (($throw === false) ? false : $res);
+            } catch (Throwable|Exception $e) {
+                $roll();
+                if (empty($throw)) {
+                    return $e->getMessage();
+                }
+                throw new Exception($e->getMessage());
+            }
+        }, ($isValidModelClass ? $model : []));
+    }
+
+    /**
      * Db自动事务
      * @param callable          $callable 执行包,返回false回滚
      * @param callable|bool     $error    报错执行包,true=throw,false=return,callable=自定返回
      * @param array|string|null $model    跨库model
      * @return mixed
-     * @throws Exception
      */
-    public static function work(callable $callable, callable|bool $error = false, array|string|null $model = null): mixed {
+    public static function trans(callable $callable, callable|bool $error = false, array|string|null $model = null): mixed {
         return static::affair(function($begin, $submit, $roll) use ($callable, $error) {
             try {
                 $begin();
