@@ -44,7 +44,14 @@ class ModelDb {
      */
     public static function firsts(mixed $builder, array|string|null $field = null): mixed {
         $item = $builder->first();
-        $field = !empty($field) ? $field : ModelHelper::$tableClassList[$builder->from ?? 0] ?? [];
+        if (empty($field) && !empty($tab = ($builder->from ?? null))) {
+            $class = ModelHelper::$tableClassList[$tab] ?? "";
+            if (!empty($class)) {
+                if (!empty($arrayList = ($class::$aloneArrayList ?? []))) {
+                    $field = array_keys($arrayList);
+                }
+            }
+        }
         if (!empty($item) && !empty($field)) {
             $array = is_array($field) ? $field : explode(',', $field);
             foreach ($array as $key) {
@@ -64,7 +71,14 @@ class ModelDb {
      */
     public static function gets(mixed $builder, array|string|null $field = null): mixed {
         $items = $builder->get();
-        $field = !empty($field) ? $field : ModelHelper::$tableClassList[$builder->from ?? 0] ?? [];
+        if (empty($field) && !empty($tab = ($builder->from ?? null))) {
+            $class = ModelHelper::$tableClassList[$tab] ?? "";
+            if (!empty($class)) {
+                if (!empty($arrayList = ($class::$aloneArrayList ?? []))) {
+                    $field = array_keys($arrayList);
+                }
+            }
+        }
         if (!empty($items) && !empty($field)) {
             $array = is_array($field) ? $field : explode(',', $field);
             foreach ($items as &$item) {
