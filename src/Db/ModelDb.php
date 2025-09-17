@@ -4,6 +4,7 @@ namespace AloneWebMan\Model\Db;
 
 use stdClass;
 use AloneWebMan\Model\SqlHelper;
+use AloneWebMan\Model\ModelHelper;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Database\Query\Expression;
@@ -43,6 +44,7 @@ class ModelDb {
      */
     public static function firsts(mixed $builder, array|string|null $field = null): mixed {
         $item = $builder->first();
+        $field = !empty($field) ? $field : ModelHelper::$tableClassList[$builder->from ?? 0] ?? [];
         if (!empty($item) && !empty($field)) {
             $array = is_array($field) ? $field : explode(',', $field);
             foreach ($array as $key) {
@@ -62,6 +64,7 @@ class ModelDb {
      */
     public static function gets(mixed $builder, array|string|null $field = null): mixed {
         $items = $builder->get();
+        $field = !empty($field) ? $field : ModelHelper::$tableClassList[$builder->from ?? 0] ?? [];
         if (!empty($items) && !empty($field)) {
             $array = is_array($field) ? $field : explode(',', $field);
             foreach ($items as &$item) {
