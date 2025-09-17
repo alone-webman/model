@@ -90,7 +90,7 @@ class Helper {
                     $type = strtolower($obj->DATA_TYPE);
                     if ($type == 'json') {
                         $casts .= "        \"" . $obj->COLUMN_NAME . "\" => \"array\",\r\n";
-                        $jsonList .= "        \"" . $obj->COLUMN_NAME . "\" => \"array\",\r\n";
+                        $jsonList .= "        \"" . $obj->COLUMN_NAME . "\",\r\n";
                     } elseif ($type == 'decimal') {
                         $casts .= "        \"" . $obj->COLUMN_NAME . "\" => \"float\",\r\n";
                     }

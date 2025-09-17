@@ -47,13 +47,9 @@ class ModelDb {
         $item = $builder->first();
         if (empty($field) && !empty($tab = ($builder->from ?? null))) {
             $class = Bootstrap::$tableClassList[$tab] ?? "";
-            if (!empty($class)) {
-                if (!empty($arrayList = ($class::$aloneArrayList ?? []))) {
-                    $field = array_keys($arrayList);
-                }
-            }
+            $field = !empty($class) ? ($class::$aloneArrayList ?? []) : null;
         }
-        if (!empty($item) && !empty($field)) {
+        if (!empty($field) && !empty($item)) {
             $array = is_array($field) ? $field : explode(',', $field);
             foreach ($array as $key) {
                 if (in_array($key, $array)) {
@@ -74,13 +70,9 @@ class ModelDb {
         $items = $builder->get();
         if (empty($field) && !empty($tab = ($builder->from ?? null))) {
             $class = Bootstrap::$tableClassList[$tab] ?? "";
-            if (!empty($class)) {
-                if (!empty($arrayList = ($class::$aloneArrayList ?? []))) {
-                    $field = array_keys($arrayList);
-                }
-            }
+            $field = !empty($class) ? ($class::$aloneArrayList ?? []) : null;
         }
-        if (!empty($items) && !empty($field)) {
+        if (!empty($field) && !empty($item)) {
             $array = is_array($field) ? $field : explode(',', $field);
             foreach ($items as &$item) {
                 foreach ($item as $key => $val) {
