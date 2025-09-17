@@ -49,11 +49,12 @@ class ModelDb {
         if (empty($field) && !empty($tab = ($builder->from ?? null))) {
             $class = Bootstrap::$tableClassList[$tab] ?? "";
             $field = !empty($class) ? ($class::$aloneArrayList ?? []) : null;
+        } else {
+            $field = is_array($field) ? $field : explode(',', $field);
         }
         if (!empty($field) && !empty($item)) {
-            $fields = is_array($field) ? $field : explode(',', $field);
             $value = get_object_vars($item);
-            $array = array_intersect_key($value, array_flip($fields));
+            $array = array_intersect_key($value, array_flip($field));
             foreach ($array as $key => $val) {
                 $item->$key = is_array($val) ? $val : SqlHelper::isJson($val ?: "");
             }
@@ -71,14 +72,14 @@ class ModelDb {
     public static function gets(mixed $builder, array|string|null $field = null): mixed {
         $items = $builder->get();
         if (empty($field) && !empty($tab = ($builder->from ?? null))) {
-            $class = Bootstrap::$tableClassList[$tab] ?? "";
-            $field = !empty($class) ? ($class::$aloneArrayList ?? []) : null;
+            $field = !empty($class = (Bootstrap::$tableClassList[$tab] ?? "")) ? ($class::$aloneArrayList ?? []) : null;
+        } else {
+            $field = is_array($field) ? $field : explode(',', $field);
         }
         if (!empty($field) && !empty($items)) {
-            $fields = is_array($field) ? $field : explode(',', $field);
             foreach ($items as &$item) {
                 $value = get_object_vars($item);
-                $array = array_intersect_key($value, array_flip($fields));
+                $array = array_intersect_key($value, array_flip($field));
                 foreach ($array as $key => $val) {
                     $item->$key = is_array($val) ? $val : SqlHelper::isJson($val ?: "");
                 }
