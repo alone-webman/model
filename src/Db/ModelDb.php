@@ -39,6 +39,7 @@ class ModelDb {
     }
 
     /**
+     * json转换成array
      * @param mixed             $builder
      * @param array|string|null $field
      * @return mixed
@@ -61,6 +62,7 @@ class ModelDb {
     }
 
     /**
+     * json转换成array
      * @param mixed             $builder
      * @param array|string|null $field
      * @return mixed
