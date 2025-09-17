@@ -65,9 +65,8 @@ class ModelDb {
         if (!empty($items) && !empty($field)) {
             $array = is_array($field) ? $field : explode(',', $field);
             foreach ($items as &$item) {
-                foreach ($item as $key) {
+                foreach ($item as $key => $val) {
                     if (in_array($key, $array)) {
-                        $val = $item->$key;
                         $item->$key = is_array($val) ? $val : SqlHelper::isJson($val);
                     }
                 }
