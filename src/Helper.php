@@ -81,6 +81,7 @@ class Helper {
                 $property .= " * $proTitle\r\n";
                 $timestamps = false;
                 $casts = '';
+                $jsonList = '';
                 $getArr = '';
                 foreach ($fieldArr as $obj) {
                     if ($obj->COLUMN_NAME == 'created_at' || $obj->COLUMN_NAME == 'updated_at') {
@@ -89,6 +90,7 @@ class Helper {
                     $type = strtolower($obj->DATA_TYPE);
                     if ($type == 'json') {
                         $casts .= "        \"" . $obj->COLUMN_NAME . "\" => \"array\",\r\n";
+                        $jsonList .= "        \"" . $obj->COLUMN_NAME . "\" => \"array\",\r\n";
                     } elseif ($type == 'decimal') {
                         $casts .= "        \"" . $obj->COLUMN_NAME . "\" => \"float\",\r\n";
                     }
@@ -120,8 +122,10 @@ class Helper {
                     $aloneCode .= "    protected \$casts = [\r\n";
                     $aloneCode .= trim(trim($casts, "\r\n"), ",") . "\r\n";
                     $aloneCode .= "    ];\r\n";
+                }
+                if (!empty($jsonList)) {
                     $aloneCode .= "    public static array \$aloneArrayList = [\r\n";
-                    $aloneCode .= trim(trim($casts, "\r\n"), ",") . "\r\n";
+                    $aloneCode .= trim(trim($jsonList, "\r\n"), ",") . "\r\n";
                     $aloneCode .= "    ];\r\n";
                 }
                 $aloneCode .= "    public static string \$aloneTableName = \"" . $table . "\";\r\n";
