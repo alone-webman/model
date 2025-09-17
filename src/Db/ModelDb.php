@@ -3,6 +3,7 @@
 namespace AloneWebMan\Model\Db;
 
 use stdClass;
+use AloneWebMan\Model\SqlHelper;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Database\Query\Expression;
@@ -27,6 +28,52 @@ class ModelDb {
         $builder('pageLimit', function(int $offset, int $limit) {
             return ModelDb::pageLimit($this, $offset, $limit);
         }, $model);
+        $builder('firsts', function(array|string|null $field = null) {
+            return ModelDb::firsts($this, $field);
+        }, $model);
+        $builder('gets', function(array|string|null $field = null) {
+            return ModelDb::gets($this, $field);
+        }, $model);
+    }
+
+    /**
+     * @param mixed             $builder
+     * @param array|string|null $field
+     * @return mixed
+     */
+    public static function firsts(mixed $builder, array|string|null $field = null): mixed {
+        $item = $builder->first();
+        if (!empty($item) && !empty($field)) {
+            $array = is_array($field) ? $field : explode(',', $field);
+            foreach ($array as $key) {
+                if (in_array($key, $array)) {
+                    $val = $item->$key;
+                    $item->$key = is_array($val) ? $val : SqlHelper::isJson($val);
+                }
+            }
+        }
+        return $item;
+    }
+
+    /**
+     * @param mixed             $builder
+     * @param array|string|null $field
+     * @return mixed
+     */
+    public static function gets(mixed $builder, array|string|null $field = null): mixed {
+        $items = $builder->get();
+        if (!empty($items) && !empty($field)) {
+            $array = is_array($field) ? $field : explode(',', $field);
+            foreach ($items as &$item) {
+                foreach ($item as $key) {
+                    if (in_array($key, $array)) {
+                        $val = $item->$key;
+                        $item->$key = is_array($val) ? $val : SqlHelper::isJson($val);
+                    }
+                }
+            }
+        }
+        return $items;
     }
 
     /**

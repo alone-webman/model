@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
  * @method stdClass paging(int $page = 1, int $count = 20, mixed $columns = ['*'], mixed $pageName = 'page')
  * @method stdClass pageLimit(int $offset, int $limit)
  * @method int updateInt(string $field, int|float $amount, array $extra = [])
+ * @method int firsts(array|string|null $field = null)
+ * @method int gets(array|string|null $field = null)
  */
 trait ModelHelper {
     /**
