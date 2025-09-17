@@ -120,6 +120,9 @@ class Helper {
                     $aloneCode .= "    protected \$casts = [\r\n";
                     $aloneCode .= trim(trim($casts, "\r\n"), ",") . "\r\n";
                     $aloneCode .= "    ];\r\n";
+                    $aloneCode .= "    protected static \$aloneArray = [\r\n";
+                    $aloneCode .= trim(trim($casts, "\r\n"), ",") . "\r\n";
+                    $aloneCode .= "    ];\r\n";
                 }
                 $aloneCode .= "    public static string \$aloneTableName = \"" . $table . "\";\r\n";
                 $aloneCode .= "    public static string \$aloneTableTitle = \"" . trim($v->TABLE_COMMENT) . "\";\r\n";
