@@ -26,14 +26,12 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
  * @method int gets(array|string|null $field = null)
  */
 trait ModelHelper {
-    public static array $tableClassList = [];
-
     /**
      * Db连接
      * @return Expression|EloquentBuilder|Builder|Collection|Connection|static
      */
     public static function link(): Expression|EloquentBuilder|Builder|Collection|Connection|static {
-        static::$tableClassList[static::$aloneTableName] = static::class;
+        Bootstrap::$tableClassList[static::$aloneTableName] = static::class;
         return Db::connection(static::$aloneConnName);
     }
 

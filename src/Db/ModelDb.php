@@ -4,6 +4,7 @@ namespace AloneWebMan\Model\Db;
 
 use stdClass;
 use AloneWebMan\Model\SqlHelper;
+use AloneWebMan\Model\Bootstrap;
 use AloneWebMan\Model\ModelHelper;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -45,7 +46,7 @@ class ModelDb {
     public static function firsts(mixed $builder, array|string|null $field = null): mixed {
         $item = $builder->first();
         if (empty($field) && !empty($tab = ($builder->from ?? null))) {
-            $class = ModelHelper::$tableClassList[$tab] ?? "";
+            $class = Bootstrap::$tableClassList[$tab] ?? "";
             if (!empty($class)) {
                 if (!empty($arrayList = ($class::$aloneArrayList ?? []))) {
                     $field = array_keys($arrayList);
@@ -72,7 +73,7 @@ class ModelDb {
     public static function gets(mixed $builder, array|string|null $field = null): mixed {
         $items = $builder->get();
         if (empty($field) && !empty($tab = ($builder->from ?? null))) {
-            $class = ModelHelper::$tableClassList[$tab] ?? "";
+            $class = Bootstrap::$tableClassList[$tab] ?? "";
             if (!empty($class)) {
                 if (!empty($arrayList = ($class::$aloneArrayList ?? []))) {
                     $field = array_keys($arrayList);

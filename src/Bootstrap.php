@@ -6,6 +6,8 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class Bootstrap {
+    public static array $tableClassList = [];
+
     public static function start($worker): void {
         $extend = config('plugin.alone.model.app.extend', []);
         if (!empty($extend['status'] ?? '') && !empty($method = ($extend['method'] ?? '')) && is_callable($method)) {
