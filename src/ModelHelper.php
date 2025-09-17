@@ -13,8 +13,8 @@ use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 /**
- * @method Expression|EloquentBuilder|Builder|Collection|mixed|static firsts(array $columns = ['*'])
- * @method Expression|EloquentBuilder|Builder|Collection|mixed|static gets(array $columns = ['*'])
+ * @method Expression|EloquentBuilder|Builder|Collection|mixed|static firsts(array|string|null $json = null)
+ * @method Expression|EloquentBuilder|Builder|Collection|mixed|static gets(array|string|null $json = null)
  * @method Expression|EloquentBuilder|Builder|Collection|Connection|mixed|static countRaw(string $alias = '', string $where = '')
  * @method Expression|EloquentBuilder|Builder|Collection|Connection|mixed|static sumRaw(string|array $field, string $where = '')
  * @method Expression|EloquentBuilder|Builder|Collection|Connection|mixed|static maxRaw(string|array $field, string $where = '')
