@@ -13,6 +13,8 @@ use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 /**
+ * @method Expression|EloquentBuilder|Builder|Collection|mixed|static firsts(array $columns = ['*'])
+ * @method Expression|EloquentBuilder|Builder|Collection|mixed|static gets(array $columns = ['*'])
  * @method Expression|EloquentBuilder|Builder|Collection|Connection|mixed|static countRaw(string $alias = '', string $where = '')
  * @method Expression|EloquentBuilder|Builder|Collection|Connection|mixed|static sumRaw(string|array $field, string $where = '')
  * @method Expression|EloquentBuilder|Builder|Collection|Connection|mixed|static maxRaw(string|array $field, string $where = '')
@@ -22,8 +24,6 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
  * @method stdClass paging(int $page = 1, int $count = 20, mixed $columns = ['*'], mixed $pageName = 'page')
  * @method stdClass pageLimit(int $offset, int $limit)
  * @method int updateInt(string $field, int|float $amount, array $extra = [])
- * @method int firsts(array|string|null $field = null)
- * @method int gets(array|string|null $field = null)
  */
 trait ModelHelper {
     /**

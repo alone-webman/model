@@ -30,31 +30,31 @@ class ModelDb {
         $builder('pageLimit', function(int $offset, int $limit) {
             return ModelDb::pageLimit($this, $offset, $limit);
         }, $model);
-        $builder('firsts', function(array|string|null $field = null) {
-            return ModelDb::firsts($this, $field);
+        $builder('firsts', function(array|string|null $columns = null) {
+            return ModelDb::firsts($this, $columns);
         }, $model);
-        $builder('gets', function(array|string|null $field = null) {
-            return ModelDb::gets($this, $field);
+        $builder('gets', function(array|string|null $columns = null) {
+            return ModelDb::gets($this, $columns);
         }, $model);
     }
 
     /**
      * json转换成array
      * @param mixed             $builder
-     * @param array|string|null $field
-     * @return mixed
+     * @param array|string|null $columns
+     * @return Expression|EloquentBuilder|Builder|Collection|null|static|mixed
      */
-    public static function firsts(mixed $builder, array|string|null $field = null): mixed {
+    public static function firsts(mixed $builder, array|string|null $columns = null): mixed {
         $item = $builder->first();
-        if (empty($field) && !empty($tab = ($builder->from ?? null))) {
+        if (empty($columns) && !empty($tab = ($builder->from ?? null))) {
             $class = Bootstrap::$tableClassList[$tab] ?? "";
-            $field = !empty($class) ? ($class::$aloneArrayList ?? []) : null;
+            $columns = !empty($class) ? ($class::$aloneArrayList ?? []) : null;
         } else {
-            $field = is_array($field) ? $field : explode(',', $field);
+            $columns = is_array($columns) ? $columns : explode(',', $columns);
         }
-        if (!empty($field) && !empty($item)) {
+        if (!empty($columns) && !empty($item)) {
             $value = get_object_vars($item);
-            $array = array_intersect_key($value, array_flip($field));
+            $array = array_intersect_key($value, array_flip($columns));
             foreach ($array as $key => $val) {
                 $item->$key = is_array($val) ? $val : SqlHelper::isJson($val ?: "");
             }
@@ -66,20 +66,20 @@ class ModelDb {
     /**
      * json转换成array
      * @param mixed             $builder
-     * @param array|string|null $field
-     * @return mixed
+     * @param array|string|null $columns
+     * @return Expression|EloquentBuilder|Builder|Collection|null|static
      */
-    public static function gets(mixed $builder, array|string|null $field = null): mixed {
+    public static function gets(mixed $builder, array|string|null $columns = null): mixed {
         $items = $builder->get();
-        if (empty($field) && !empty($tab = ($builder->from ?? null))) {
-            $field = !empty($class = (Bootstrap::$tableClassList[$tab] ?? "")) ? ($class::$aloneArrayList ?? []) : null;
+        if (empty($columns) && !empty($tab = ($builder->from ?? null))) {
+            $columns = !empty($class = (Bootstrap::$tableClassList[$tab] ?? "")) ? ($class::$aloneArrayList ?? []) : null;
         } else {
-            $field = is_array($field) ? $field : explode(',', $field);
+            $columns = is_array($columns) ? $columns : explode(',', $columns);
         }
-        if (!empty($field) && !empty($items)) {
+        if (!empty($columns) && !empty($items)) {
             foreach ($items as &$item) {
                 $value = get_object_vars($item);
-                $array = array_intersect_key($value, array_flip($field));
+                $array = array_intersect_key($value, array_flip($columns));
                 foreach ($array as $key => $val) {
                     $item->$key = is_array($val) ? $val : SqlHelper::isJson($val ?: "");
                 }
