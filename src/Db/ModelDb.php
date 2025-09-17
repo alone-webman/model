@@ -52,11 +52,12 @@ class ModelDb {
         }
         if (!empty($field) && !empty($item)) {
             $fields = is_array($field) ? $field : explode(',', $field);
-            foreach ($fields as $key) {
-                if (isset($item->$key)) {
-                    $item->$key = is_array($item->$key) ? $item->$key : SqlHelper::isJson($item->$key);
-                }
+            $value = get_object_vars($item);
+            $array = array_intersect_key($value, array_flip($fields));
+            foreach ($array as $key => $val) {
+                $item->$key = is_array($val) ? $val : SqlHelper::isJson($val ?: "");
             }
+
         }
         return $item;
     }
@@ -79,7 +80,7 @@ class ModelDb {
                 $value = get_object_vars($item);
                 $array = array_intersect_key($value, array_flip($fields));
                 foreach ($array as $key => $val) {
-                    $item->$key = is_array($val) ? $val : SqlHelper::isJson($val);
+                    $item->$key = is_array($val) ? $val : SqlHelper::isJson($val ?: "");
                 }
             }
         }
