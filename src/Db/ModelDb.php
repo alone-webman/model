@@ -50,11 +50,10 @@ class ModelDb {
             $field = !empty($class) ? ($class::$aloneArrayList ?? []) : null;
         }
         if (!empty($field) && !empty($item)) {
-            $array = is_array($field) ? $field : explode(',', $field);
-            foreach ($array as $key) {
-                if (in_array($key, $array)) {
-                    $val = $item->$key;
-                    $item->$key = is_array($val) ? $val : SqlHelper::isJson($val);
+            $fields = is_array($field) ? $field : explode(',', $field);
+            foreach ($fields as $key) {
+                if (isset($item->$key)) {
+                    $item->$key = is_array($item->$key) ? $item->$key : SqlHelper::isJson($item->$key);
                 }
             }
         }
@@ -72,13 +71,13 @@ class ModelDb {
             $class = Bootstrap::$tableClassList[$tab] ?? "";
             $field = !empty($class) ? ($class::$aloneArrayList ?? []) : null;
         }
-        if (!empty($field) && !empty($item)) {
-            $array = is_array($field) ? $field : explode(',', $field);
+        if (!empty($field) && !empty($items)) {
+            $fields = is_array($field) ? $field : explode(',', $field);
             foreach ($items as &$item) {
-                foreach ($item as $key => $val) {
-                    if (in_array($key, $array)) {
-                        $item->$key = is_array($val) ? $val : SqlHelper::isJson($val);
-                    }
+                $value = get_object_vars($item);
+                $array = array_intersect_key($value, array_flip($fields));
+                foreach ($array as $key => $val) {
+                    $item->$key = is_array($val) ? $val : SqlHelper::isJson($val);
                 }
             }
         }
