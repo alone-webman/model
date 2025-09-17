@@ -120,7 +120,7 @@ class Helper {
                     $aloneCode .= "    protected \$casts = [\r\n";
                     $aloneCode .= trim(trim($casts, "\r\n"), ",") . "\r\n";
                     $aloneCode .= "    ];\r\n";
-                    $aloneCode .= "    protected static \$aloneArray = [\r\n";
+                    $aloneCode .= "    public static array \$aloneArray = [\r\n";
                     $aloneCode .= trim(trim($casts, "\r\n"), ",") . "\r\n";
                     $aloneCode .= "    ];\r\n";
                 }
