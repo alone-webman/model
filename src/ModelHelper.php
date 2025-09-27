@@ -142,4 +142,38 @@ trait ModelHelper {
             }
         }, $model);
     }
+
+    /**
+     * 自动单多库事务,第2个和第3个参数不限位置,可对调传入
+     * @param callable                   $callable 执行包   只有返回false才会回滚事务
+     * @param callable|array|string|null $catch    null=throw,callable=报错包($e,$err)执行返回false自动throw
+     * @param array|string|null          $model    model::class,默认当前库事务
+     * @return mixed
+     */
+    public static function transaction(callable $callable, callable|array|string|null $catch = null, array|string|null $model = null): mixed {
+        $isCatch = is_array($catch) || is_string($catch);
+        $catch = ($isCatch ? (is_callable($model) ? $model : null) : $catch);
+        return static::affair(function($begin, $submit, $roll) use ($callable, $catch) {
+            $begin();
+            try {
+                $res = $callable();
+                if ($res === false) {
+                    $roll();
+                } else {
+                    $submit();
+                }
+                return $res;
+            } catch (\Throwable|\Exception $e) {
+                $roll();
+                if (!empty($catch) && is_callable($catch)) {
+                    $err = $catch($e, ['code' => $e->getCode(), 'line' => $e->getLine(), 'file' => $e->getFile(), 'msg' => $e->getMessage()]);
+                    if ($err === false) {
+                        throw new Exception($e->getMessage());
+                    }
+                    return $err;
+                }
+                throw new Exception($e->getMessage());
+            }
+        }, ($isCatch ? $catch : $model));
+    }
 }
