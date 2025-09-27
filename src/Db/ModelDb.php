@@ -102,7 +102,7 @@ class ModelDb {
         if ($amount > 0) {
             return $builder->increment($field, abs($amount), $extra);
         } elseif ($amount < 0) {
-            return $builder->decrement($field, -abs($amount), $extra);
+            return $builder->decrement($field, abs($amount), $extra);
         } elseif (!empty($extra)) {
             return $builder->update($extra);
         }
