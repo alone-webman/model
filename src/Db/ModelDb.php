@@ -5,7 +5,6 @@ namespace AloneWebMan\Model\Db;
 use stdClass;
 use AloneWebMan\Model\SqlHelper;
 use AloneWebMan\Model\Bootstrap;
-use AloneWebMan\Model\ModelHelper;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Database\Query\Expression;
@@ -104,7 +103,7 @@ class ModelDb {
         } elseif ($amount < 0) {
             return $builder->decrement($field, abs($amount), $extra);
         } elseif (!empty($extra)) {
-            return $builder->update($extra);
+            return $builder->update(array_merge([$field => $amount], $extra));
         }
         return 0;
     }
