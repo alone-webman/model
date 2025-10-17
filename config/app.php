@@ -1,15 +1,17 @@
 <?php
 
-use AloneWebMan\Model\Db\ModelDb;
 use Illuminate\Database\Events\QueryExecuted;
 
 return [
+    /**
+     * 是否启动
+     */
     'enable' => true,
 
     /*
      * sql备份目录(绝对路径)
      */
-    'sql'    => base_path('alone'),
+    'sql'    => base_path('backup'),
 
     /*
      * 监听SQL
@@ -28,32 +30,55 @@ return [
      * php webman alone:model 生成文件
      */
     'model'  => [
-        //model 命名空间或者相对路径
+        /*
+         * model 命名空间或者相对路径
+         */
         'namespace'      => 'app\model',
-        //model前缀
+        /*
+         * model前缀
+         */
         "prefix"         => "",
-        //model后缀
+        /*
+         * model后缀
+         */
         "suffix"         => "",
-        //model主类存在时是否更新
+        /*
+         * model主类存在时是否更新
+         */
         "updateModel"    => false,
-        //是否删除不存在表单的model
+        /*
+         * 是否删除不存在表单的model
+         */
         "deleteNotModel" => true,
-        //更新目录名称(此目录每次都会更新)
+        /*
+         * 更新目录名称(此目录每次都会更新)
+         */
         "updateName"     => "update",
-        //Common继承类名
+        /*
+         * Common继承类名
+         */
         "extends"        => "\support\Model",
-        //Common use trait类,多个使用array
+        /*
+         * Common use trait类,多个使用array或者使用string
+         */
         "trait"          => ["use \AloneWebMan\Model\ModelHelper"],
-        //类参数设置
+        /*
+         * 类参数设置 array|string
+         */
         "args"           => [
             'protected $guarded    = [];',
             'public    $primaryKey = "id";',
             'public    $timestamps = true;',
             'public    $dateFormat = "Y-m-d H:i:s";'
         ],
-        //同连接model开关
+        /*
+         * 同连接model开关
+         */
         "switch"         => false,
-        //生成同连接model配置 ["完整连接名"=>["目录名"=>"数据名"]...]
+        /*
+         * 生成同连接model配置
+         * ["完整连接名"=>["目录名"=>"数据名"]...]
+         */
         "database"       => [
             "plugin.model.main" => [
                 "alias" => "database_name"
