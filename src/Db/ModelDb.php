@@ -49,7 +49,7 @@ class ModelDb {
         if (empty($columns) && !empty($tab = CreateModel::getTableName($builder))) {
             $class = Bootstrap::$tableClassList[$tab] ?? "";
             $columns = !empty($class) ? ($class::$aloneArrayList ?? []) : null;
-        } else {
+        } elseif (!empty($columns)) {
             $columns = is_array($columns) ? $columns : explode(',', $columns);
         }
         if (!empty($columns) && !empty($item)) {
@@ -73,7 +73,7 @@ class ModelDb {
         $items = $builder->get();
         if (empty($columns) && !empty($tab = CreateModel::getTableName($builder))) {
             $columns = !empty($class = (Bootstrap::$tableClassList[$tab] ?? "")) ? ($class::$aloneArrayList ?? []) : null;
-        } else {
+        } elseif (!empty($columns)) {
             $columns = is_array($columns) ? $columns : explode(',', $columns);
         }
         if (!empty($columns) && !empty($items)) {
