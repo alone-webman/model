@@ -28,11 +28,11 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 trait ModelHelper {
     /**
      * Db连接
-     * @param string|null $table
+     * @param mixed       $table
      * @param string|null $as
      * @return Expression|EloquentBuilder|Builder|Collection|Connection|static
      */
-    public static function link(string|null $table = null, string|null $as = null): Expression|EloquentBuilder|Builder|Collection|Connection|static {
+    public static function link(mixed $table = null, string|null $as = null): Expression|EloquentBuilder|Builder|Collection|Connection|static {
         Bootstrap::$tableClassList[static::$aloneTableName] = static::class;
         $connection = Db::connection(static::$aloneConnName);
         return $table ? $connection->table($table, $as) : $connection;
