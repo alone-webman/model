@@ -176,4 +176,18 @@ trait ModelHelper {
             }
         }, ($isCatch ? $catch : $model));
     }
+
+    /**
+     * 获取表单名
+     * @param Expression|EloquentBuilder|Builder|Collection|mixed|static $builder
+     * @return string
+     */
+    public static function getTableName(mixed $builder): string {
+        $from = $builder->from;
+        if (is_string($from)) {
+            return $from;
+        }
+        $from = $from->getValue($builder->getGrammar());
+        return is_string($from) ? $from : static::$aloneTableName;
+    }
 }
