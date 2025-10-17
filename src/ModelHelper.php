@@ -33,9 +33,15 @@ trait ModelHelper {
      * @return Expression|EloquentBuilder|Builder|Collection|Connection|static
      */
     public static function link(mixed $table = null, string|null $as = null): Expression|EloquentBuilder|Builder|Collection|Connection|static {
-        Bootstrap::$tableClassList[static::$aloneTableName] = static::class;
         $connection = Db::connection(static::$aloneConnName);
-        return $table ? $connection->table($table, $as) : $connection;
+        if (empty($table)) {
+            Bootstrap::$tableClassList[static::$aloneTableName] = static::class;
+            return $connection;
+        }
+        if (is_string($table) && static::$aloneMain === false) {
+            return $connection->table(Db::raw($table), $as);
+        }
+        return $connection->table($table, $as);
     }
 
     /**
@@ -44,7 +50,9 @@ trait ModelHelper {
      * @return Expression|EloquentBuilder|Builder|Collection|Connection|static
      */
     public static function tab(string|null $as = null): Expression|EloquentBuilder|Builder|Collection|Connection|static {
-        return self::link(static::getTableName(), $as);
+        Bootstrap::$tableClassList[static::$aloneTableName] = static::class;
+        $connection = Db::connection(static::$aloneConnName);
+        return $connection->table(static::getTableName(), $as);
     }
 
     /**
