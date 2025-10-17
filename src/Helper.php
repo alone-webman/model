@@ -26,6 +26,7 @@ class Helper {
         //Unix域套
         'unix_socket' => null
     ];
+
     // 生成配置
     protected array $buildConfig = [
         //根目录(绝对路径)
