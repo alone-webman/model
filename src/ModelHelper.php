@@ -108,7 +108,7 @@ trait ModelHelper {
             $begin();
             try {
                 $res = $callable(function($message, ...$param) {
-                    throw new Exception(is_array($message) ? json_encode($message, JSON_UNESCAPED_UNICODE) : $message, $param);
+                    throw new Exception((is_array($message) || is_object($message)) ? json_encode($message, JSON_UNESCAPED_UNICODE) : $message, $param);
                 });
                 $submit();
                 return $res;
