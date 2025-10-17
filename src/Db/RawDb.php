@@ -11,10 +11,10 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 class RawDb {
     /**
      * @param mixed $builder
-     * @param bool  $model
+     * @param bool  $model 是否支持model
      * @return void
      */
-    public static function loader(mixed $builder, bool $model = true): void {
+    public static function loader(mixed $builder, bool $model): void {
         $builder('countRaw', function(string $alias = 'count', string $where = '') {
             return RawDb::countRaw($this, $alias, $where);
         }, $model);

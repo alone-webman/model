@@ -74,6 +74,22 @@ class Helper {
     // 更新目录绝对路径
     protected string $_updatePath = "";
 
+
+    public static function model(): void {
+        $mysqlList = alone_get_data_base('mysql');
+        if (count($mysqlList) == 0) {
+            print_r("No database");
+            return;
+        }
+        foreach ($mysqlList as $key) {
+            //获取名称
+            $arr = explode(".", $key);
+            //获取数据库名称
+            $name = count($arr) == 1 ? $key : join('', array_slice($arr, -1));
+
+        }
+    }
+
     /**
      * 生成model信息
      * @return array

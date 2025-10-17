@@ -17,7 +17,7 @@ class SqlExec extends Command {
     }
 
     public static function execCommand(mixed $int = null): void {
-        $list = alone_get_data_base(config('plugin.alone.model.app.driver', ''));
+        $list = alone_get_data_base('mysql');
         echo "--------------------------------------------------------\r\n";
         if (count($list) == 0) {
             echo "No database\r\n";

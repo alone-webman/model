@@ -28,11 +28,14 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 trait ModelHelper {
     /**
      * Db连接
+     * @param string|null $table
+     * @param string|null $as
      * @return Expression|EloquentBuilder|Builder|Collection|Connection|static
      */
-    public static function link(): Expression|EloquentBuilder|Builder|Collection|Connection|static {
+    public static function link(string|null $table = null, string|null $as = null): Expression|EloquentBuilder|Builder|Collection|Connection|static {
         Bootstrap::$tableClassList[static::$aloneTableName] = static::class;
-        return Db::connection(static::$aloneConnName);
+        $connection = Db::connection(static::$aloneConnName);
+        return $table ? $connection->table($table, $as) : $connection;
     }
 
     /**
@@ -41,7 +44,7 @@ trait ModelHelper {
      * @return Expression|EloquentBuilder|Builder|Collection|Connection|static
      */
     public static function tab(string|null $as = null): Expression|EloquentBuilder|Builder|Collection|Connection|static {
-        return self::link()->table(static::$aloneTableName, $as);
+        return self::link(static::setTableName(), $as);
     }
 
     /**
@@ -189,5 +192,19 @@ trait ModelHelper {
         }
         $from = $from->getValue($builder->getGrammar());
         return is_string($from) ? $from : static::$aloneTableName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function setTableName(): mixed {
+        return Db::raw((static::$aloneMain === true ? static::$aloneTableName : Db::raw(static::$aloneTableName)));
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTable(): mixed {
+        return static::setTableName();
     }
 }

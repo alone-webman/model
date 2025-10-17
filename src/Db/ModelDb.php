@@ -15,10 +15,10 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 class ModelDb {
     /**
      * @param mixed $builder
-     * @param bool  $model
+     * @param bool  $model 是否支持model
      * @return void
      */
-    public static function loader(mixed $builder, bool $model = true): void {
+    public static function loader(mixed $builder, bool $model): void {
         $builder('updateInt', function(string $field, int|float $amount, array $extra = []) {
             return ModelDb::updateInt($this, $field, $amount, $extra);
         }, $model);

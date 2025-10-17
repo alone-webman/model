@@ -23,18 +23,6 @@ function alone_get_data_base(array|string $driver = []): mixed {
     return $list;
 }
 
-if (!function_exists('alone_model')) {
-    /**
-     * 生成model文件
-     * @param array $config [namespace=相对路径,prefix=文件前缀,suffix=文件后缀,extends=继承类名,trait=引入类]
-     * @param bool  $update 是否更新已存在model文件头property
-     * @return array|string
-     */
-    function alone_model(array $config, bool $update = true): array|string {
-        return Helper::model(alone_get_data_base(config('plugin.alone.model.app.driver', '')), $config, $update);
-    }
-}
-
 if (!function_exists('alone_model_table')) {
     /**
      * 字符串命名风格转换
