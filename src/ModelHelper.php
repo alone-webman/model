@@ -107,7 +107,9 @@ trait ModelHelper {
         return static::affair(function($begin, $submit, $roll) use ($callable, $error) {
             $begin();
             try {
-                $res = $callable();
+                $res = $callable(function($message, ...$param) {
+                    throw new Exception(is_array($message) ? json_encode($message, JSON_UNESCAPED_UNICODE) : $message, $param);
+                });
                 $submit();
                 return $res;
             } catch (Throwable|Exception $e) {
@@ -168,7 +170,7 @@ trait ModelHelper {
                 $roll();
                 $err = ['code' => $e->getCode(), 'line' => $e->getLine(), 'file' => $e->getFile(), 'msg' => $e->getMessage()];
                 if ($error === true) {
-                    throw new Exception(json_encode($err));
+                    throw new Exception(json_encode($err, JSON_UNESCAPED_UNICODE));
                 }
                 return ($error === false ? $err : (is_callable($error) ? $error($e, $err) : $err));
             }
