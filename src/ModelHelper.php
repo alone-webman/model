@@ -97,6 +97,27 @@ trait ModelHelper {
     }
 
     /**
+     * 事务
+     * @param callable          $callable 执行包
+     * @param callable          $error    接收报错
+     * @param array|string|null $model
+     * @return mixed
+     */
+    public static function affairs(callable $callable, callable $error, array|string|null $model = null): mixed {
+        return static::affair(function($begin, $submit, $roll) use ($callable, $error) {
+            $begin();
+            try {
+                $res = $callable();
+                $submit();
+                return $res;
+            } catch (Throwable|Exception $e) {
+                $roll();
+                return $error($e, ['code' => $e->getCode(), 'line' => $e->getLine(), 'file' => $e->getFile(), 'msg' => $e->getMessage()]);
+            }
+        }, $model);
+    }
+
+    /**
      * 自动单多库事务
      * @param callable               $callable
      * @param array|string|bool|null $model model::class,默认当前库事务,当前库可作$throw参数
