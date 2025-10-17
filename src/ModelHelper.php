@@ -184,7 +184,7 @@ trait ModelHelper {
      * @return mixed
      */
     public static function getTableName(): mixed {
-        return Db::raw((static::$aloneMain === true ? static::$aloneTableName : Db::raw(static::$aloneTableName)));
+        return (static::$aloneMain === true ? static::$aloneTableName : Db::raw(static::$aloneTableName));
     }
 
     /**
