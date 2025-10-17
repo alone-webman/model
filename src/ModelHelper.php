@@ -44,7 +44,7 @@ trait ModelHelper {
      * @return Expression|EloquentBuilder|Builder|Collection|Connection|static
      */
     public static function tab(string|null $as = null): Expression|EloquentBuilder|Builder|Collection|Connection|static {
-        return self::link(static::setTableName(), $as);
+        return self::link(static::getTableName(), $as);
     }
 
     /**
@@ -181,23 +181,9 @@ trait ModelHelper {
     }
 
     /**
-     * 获取表单名
-     * @param Expression|EloquentBuilder|Builder|Collection|mixed|static $builder
-     * @return string
-     */
-    public static function getTableName(mixed $builder): string {
-        $from = $builder->from;
-        if (is_string($from)) {
-            return $from;
-        }
-        $from = $from->getValue($builder->getGrammar());
-        return is_string($from) ? $from : static::$aloneTableName;
-    }
-
-    /**
      * @return mixed
      */
-    public static function setTableName(): mixed {
+    public static function getTableName(): mixed {
         return Db::raw((static::$aloneMain === true ? static::$aloneTableName : Db::raw(static::$aloneTableName)));
     }
 
@@ -205,6 +191,6 @@ trait ModelHelper {
      * @return mixed
      */
     public function getTable(): mixed {
-        return static::setTableName();
+        return static::getTableName();
     }
 }

@@ -3,10 +3,9 @@
 namespace AloneWebMan\Model\Db;
 
 use stdClass;
-use AloneWebMan\Model\Helper;
 use AloneWebMan\Model\SqlHelper;
 use AloneWebMan\Model\Bootstrap;
-use AloneWebMan\Model\ModelHelper;
+use AloneWebMan\Model\CreateModel;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Database\Query\Expression;
@@ -47,7 +46,7 @@ class ModelDb {
      */
     public static function firsts(mixed $builder, array|string|null $columns = null): mixed {
         $item = $builder->first();
-        if (empty($columns) && !empty($tab = ModelHelper::getTableName($builder))) {
+        if (empty($columns) && !empty($tab = CreateModel::getTableName($builder))) {
             $class = Bootstrap::$tableClassList[$tab] ?? "";
             $columns = !empty($class) ? ($class::$aloneArrayList ?? []) : null;
         } else {
@@ -72,7 +71,7 @@ class ModelDb {
      */
     public static function gets(mixed $builder, array|string|null $columns = null): mixed {
         $items = $builder->get();
-        if (empty($columns) && !empty($tab = ModelHelper::getTableName($builder))) {
+        if (empty($columns) && !empty($tab = CreateModel::getTableName($builder))) {
             $columns = !empty($class = (Bootstrap::$tableClassList[$tab] ?? "")) ? ($class::$aloneArrayList ?? []) : null;
         } else {
             $columns = is_array($columns) ? $columns : explode(',', $columns);

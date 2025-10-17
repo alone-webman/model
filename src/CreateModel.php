@@ -2,6 +2,11 @@
 
 namespace AloneWebMan\Model;
 
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Database\Query\Expression;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+
 class CreateModel {
     public static function webMan(): void {
         $mysqlList = alone_get_data_base('mysql');
@@ -103,5 +108,19 @@ class CreateModel {
                 }
             }
         }
+    }
+
+    /**
+     * 获取表单名
+     * @param Expression|EloquentBuilder|Builder|Collection|mixed|static $builder
+     * @return string
+     */
+    public static function getTableName(mixed $builder): string {
+        $from = $builder->from;
+        if (is_string($from)) {
+            return $from;
+        }
+        $from = $from->getValue($builder->getGrammar());
+        return is_string($from) ? $from : "";
     }
 }
