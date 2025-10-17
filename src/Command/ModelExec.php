@@ -2,7 +2,7 @@
 
 namespace AloneWebMan\Model\Command;
 
-use AloneWebMan\Model\Helper;
+use AloneWebMan\Model\CreateModel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,7 +13,7 @@ class ModelExec extends Command {
 
     public function execute(InputInterface $input, OutputInterface $output): int {
         echo "--------------------------------------------------------\r\n";
-        Helper::model();
+        CreateModel::webMan();
         echo "--------------------------------------------------------\r\n";
         return self::SUCCESS;
     }
