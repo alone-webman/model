@@ -161,8 +161,8 @@ class Helper {
             if (!empty($updateModel) || empty(is_file($modelFileName))) {
                 $isModel = @file_put_contents($this->_savePath . "/$modelTableName.php", $modelCode);
                 $build[($isModel ? 'success' : 'error')][] = $this->_basePath . "/$modelTableName.php";
-                $modelFiles[$this->_savePath][] = $modelTableName . '.php';
             }
+            $modelFiles[$this->_savePath][] = $modelTableName . '.php';
             $modelFiles[$this->_savePath][] = 'CommandModel.php';
             $commonFileName = $this->_savePath . "/CommandModel.php";
             if (empty(is_file($commonFileName))) {
