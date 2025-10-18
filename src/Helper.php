@@ -83,7 +83,9 @@ class Helper {
         $this->modelConfig();
         $database = $this->mysqlConfig('database');
         $tableItem = $this->tableList($database);
-        $build[($this->workerManCommon() ? 'success' : 'error')][] = $this->_basePath . "/Common.php";
+        if (count($tableItem) > 0) {
+            $build[($this->workerManCommon() ? 'success' : 'error')][] = $this->_basePath . "/Common.php";
+        }
         $dataBasePrefix = $this->mysqlConfig('prefix', '');
         $modelFiles = [];
         foreach ($tableItem as $table => $note) {
