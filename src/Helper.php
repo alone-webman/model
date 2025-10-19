@@ -147,7 +147,7 @@ class Helper {
                 $updateCode .= "];\r\n";
                 $updateCode .= "*/";
                 $isUpdate = @file_put_contents($this->_updatePath . "/$modelName.php", $updateCode);
-                $build[($isUpdate ? 'success' : 'error')][] = $this->_basePath . "/$modelName.php";
+                $build[($isUpdate ? 'success' : 'error')][] = $this->_updatePath . "/$modelName.php";
                 /*
                  * =============生在model文件=============
                  */
