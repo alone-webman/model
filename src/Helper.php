@@ -84,99 +84,104 @@ class Helper {
         $database = $this->mysqlConfig('database');
         $tableItem = $this->tableList($database);
         if (count($tableItem) > 0) {
+            //删除目录
+            static::deleteDir($this->_updatePath);
+            //创造目录
+            static::mkDir($this->_updatePath);
+            //生成Common.php
             $build[($this->workerManCommon() ? 'success' : 'error')][] = $this->_basePath . "/Common.php";
-        }
-        $dataBasePrefix = $this->mysqlConfig('prefix', '');
-        $modelFiles = [];
-        foreach ($tableItem as $table => $note) {
-            $tableName = ($dataBasePrefix && str_starts_with($table, $dataBasePrefix)) ? substr($table, strlen($dataBasePrefix)) : $table;
-            //不是主库时加database.table
-            $tableTitle = empty($this->buildConfig['main'] ?? null) ? ($database . "." . $table) : $tableName;
-            $modelName = static::modeTable($tableName);
-            $property = "/**\r\n";
-            $property .= " * " . trim($note) . "\r\n";
-            $casts = "";
-            $json = "";
-            $help = "";
-            $fieldItem = $this->fieldList($database, $table);
-            foreach ($fieldItem as $fieldName => $field) {
-                $property .= " * @property \$" . $fieldName . " " . $field['types'] . " " . preg_replace('/\R/u', ' ', $field['note']) . "\r\n";
-                if ($field['type'] == 'json') {
-                    $casts .= "        \"" . $fieldName . "\" => \"array\",\r\n";
-                    $json .= "        \"" . $fieldName . "\",\r\n";
-                } elseif ($field['type'] == 'decimal') {
-                    $casts .= "        \"" . $fieldName . "\" => \"float\",\r\n";
+            $dataBasePrefix = $this->mysqlConfig('prefix', '');
+            $modelFiles = [];
+            foreach ($tableItem as $table => $note) {
+                $tableName = ($dataBasePrefix && str_starts_with($table, $dataBasePrefix)) ? substr($table, strlen($dataBasePrefix)) : $table;
+                //不是主库时加database.table
+                $tableTitle = empty($this->buildConfig['main'] ?? null) ? ($database . "." . $table) : $tableName;
+                $modelName = static::modeTable($tableName);
+                $property = "/**\r\n";
+                $property .= " * " . trim($note) . "\r\n";
+                $casts = "";
+                $json = "";
+                $help = "";
+                $fieldItem = $this->fieldList($database, $table);
+                foreach ($fieldItem as $fieldName => $field) {
+                    $property .= " * @property \$" . $fieldName . " " . $field['types'] . " " . preg_replace('/\R/u', ' ', $field['note']) . "\r\n";
+                    if ($field['type'] == 'json') {
+                        $casts .= "        \"" . $fieldName . "\" => \"array\",\r\n";
+                        $json .= "        \"" . $fieldName . "\",\r\n";
+                    } elseif ($field['type'] == 'decimal') {
+                        $casts .= "        \"" . $fieldName . "\" => \"float\",\r\n";
+                    }
+                    if (!($field['id'])) {
+                        $value = $field['default'];
+                        $value = is_numeric($value) ? ($value == 0 ? 0 : $value) : (is_string($value) ? ("\"$value\"") : ((($value === null ? 'null' : ($value === false ? 'false' : ($value === true ? 'true' : $value))))));
+                        $help .= "   //" . ($field['nullable'] ? "必填" : "可选") . " - " . ($field['types'] . "  " . $field['note']) . "\r\n";
+                        $values = (in_array($field['types'], ['tinyint', 'smallint', 'mediumint', 'int', 'bigint', 'float', 'double', 'decimal']) ? (is_numeric($value) ? $value : 0) : $value);
+                        $help .= "    \"" . $fieldName . "\" => $values,\r\n\r\n";
+                    }
                 }
-                if (!($field['id'])) {
-                    $value = $field['default'];
-                    $value = is_numeric($value) ? ($value == 0 ? 0 : $value) : (is_string($value) ? ("\"$value\"") : ((($value === null ? 'null' : ($value === false ? 'false' : ($value === true ? 'true' : $value))))));
-                    $help .= "   //" . ($field['nullable'] ? "必填" : "可选") . " - " . ($field['types'] . "  " . $field['note']) . "\r\n";
-                    $values = (in_array($field['types'], ['tinyint', 'smallint', 'mediumint', 'int', 'bigint', 'float', 'double', 'decimal']) ? (is_numeric($value) ? $value : 0) : $value);
-                    $help .= "    \"" . $fieldName . "\" => $values,\r\n\r\n";
+                $property .= " */\r\n";
+                /*
+                 * =============生在信息文件=============
+                 */
+                $updateCode = "<?php\r\n\r\n";
+                $updateCode .= "namespace $this->_updateNamespace;\r\n\r\n";
+                $updateCode .= $property;
+                $updateCode .= "class $modelName extends \\" . $this->_namespace . "\\CommandModel {\r\n";
+                $updateCode .= "    public              \$table       = \"" . $tableTitle . "\";\r\n";
+                $updateCode .= "    public static string \$aloneTableName = \"" . $tableTitle . "\";\r\n";
+                $updateCode .= "    public static string \$aloneTableTitle = \"" . $note . "\";\r\n";
+                if (!empty($casts)) {
+                    $updateCode .= "    protected \$casts = [\r\n";
+                    $updateCode .= trim(trim($casts, "\r\n"), ",") . "\r\n";
+                    $updateCode .= "    ];\r\n";
                 }
-            }
-            $property .= " */\r\n";
-            /*
-             * =============生在信息文件=============
-             */
-            $updateCode = "<?php\r\n\r\n";
-            $updateCode .= "namespace $this->_updateNamespace;\r\n\r\n";
-            $updateCode .= $property;
-            $updateCode .= "class $modelName extends \\" . $this->_namespace . "\\CommandModel {\r\n";
-            $updateCode .= "    public              \$table       = \"" . $tableTitle . "\";\r\n";
-            $updateCode .= "    public static string \$aloneTableName = \"" . $tableTitle . "\";\r\n";
-            $updateCode .= "    public static string \$aloneTableTitle = \"" . $note . "\";\r\n";
-            if (!empty($casts)) {
-                $updateCode .= "    protected \$casts = [\r\n";
-                $updateCode .= trim(trim($casts, "\r\n"), ",") . "\r\n";
-                $updateCode .= "    ];\r\n";
-            }
-            if (!empty($json)) {
-                $updateCode .= "    public static array \$aloneArrayList = [\r\n";
-                $updateCode .= trim(trim($json, "\r\n"), ",") . "\r\n";
-                $updateCode .= "    ];\r\n";
-            }
-            $updateCode .= "}";
-            $updateCode .= "\r\n/*\r\n";
-            $updateCode .= "[\r\n";
-            $updateCode .= trim(trim($help, "\r\n"), ",") . "\r\n";
-            $updateCode .= "];\r\n";
-            $updateCode .= "*/";
-            $isUpdate = @file_put_contents($this->_updatePath . "/$modelName.php", $updateCode);
-            $build[($isUpdate ? 'success' : 'error')][] = $this->_basePath . "/$modelName.php";
-            /*
-             * =============生在model文件=============
-             */
-            $modelTableName = !empty($prefix = ($this->buildConfig['prefix'] ?? '')) ? $prefix : "";
-            $modelTableName .= $modelName;
-            $modelTableName .= !empty($suffix = ($this->buildConfig['suffix'] ?? '')) ? ucfirst($suffix) : "";
-            $modelCode = "<?php\r\n\r\n";
-            $modelCode .= "namespace " . $this->_namespace . ";\r\n\r\n";
-            $modelCode .= "/**\r\n";
-            $modelCode .= " * " . trim($note) . "\r\n";
-            $modelCode .= " */\r\n";
-            $modelCode .= "class $modelTableName extends " . $this->_updateName . "\\$modelName {\r\n";
-            $modelCode .= $this->getModelParam();
-            $modelCode .= "}";
-            $updateModel = $this->buildConfig['updateModel'] ?? null;
-            $modelFileName = $this->_savePath . "/$modelTableName.php";
-            if (!empty($updateModel) || empty(is_file($modelFileName))) {
-                $isModel = @file_put_contents($this->_savePath . "/$modelTableName.php", $modelCode);
-                $build[($isModel ? 'success' : 'error')][] = $this->_basePath . "/$modelTableName.php";
-            }
-            $modelFiles[$this->_savePath][] = $modelTableName . '.php';
-            $modelFiles[$this->_savePath][] = 'CommandModel.php';
-            $commonFileName = $this->_savePath . "/CommandModel.php";
-            if (empty(is_file($commonFileName))) {
-                $commonCode = "<?php\r\n\r\n";
-                $commonCode .= "namespace $this->_namespace;\r\n\r\n";
-                $commonCode .= "/**\r\n";
-                $commonCode .= " * 公共Model,不会更新\r\n";
-                $commonCode .= " */\r\n";
-                $commonCode .= "class CommandModel extends " . $this->_updateName . "\\Common {\r\n";
-                $commonCode .= "}";
-                $isCommon = @file_put_contents($this->_savePath . "/CommandModel.php", $commonCode);
-                $build[($isCommon ? 'success' : 'error')][] = $this->_basePath . "/CommandModel.php";
+                if (!empty($json)) {
+                    $updateCode .= "    public static array \$aloneArrayList = [\r\n";
+                    $updateCode .= trim(trim($json, "\r\n"), ",") . "\r\n";
+                    $updateCode .= "    ];\r\n";
+                }
+                $updateCode .= "}";
+                $updateCode .= "\r\n/*\r\n";
+                $updateCode .= "[\r\n";
+                $updateCode .= trim(trim($help, "\r\n"), ",") . "\r\n";
+                $updateCode .= "];\r\n";
+                $updateCode .= "*/";
+                $isUpdate = @file_put_contents($this->_updatePath . "/$modelName.php", $updateCode);
+                $build[($isUpdate ? 'success' : 'error')][] = $this->_basePath . "/$modelName.php";
+                /*
+                 * =============生在model文件=============
+                 */
+                $modelTableName = !empty($prefix = ($this->buildConfig['prefix'] ?? '')) ? $prefix : "";
+                $modelTableName .= $modelName;
+                $modelTableName .= !empty($suffix = ($this->buildConfig['suffix'] ?? '')) ? ucfirst($suffix) : "";
+                $modelCode = "<?php\r\n\r\n";
+                $modelCode .= "namespace " . $this->_namespace . ";\r\n\r\n";
+                $modelCode .= "/**\r\n";
+                $modelCode .= " * " . trim($note) . "\r\n";
+                $modelCode .= " */\r\n";
+                $modelCode .= "class $modelTableName extends " . $this->_updateName . "\\$modelName {\r\n";
+                $modelCode .= $this->getModelParam();
+                $modelCode .= "}";
+                $updateModel = $this->buildConfig['updateModel'] ?? null;
+                $modelFileName = $this->_savePath . "/$modelTableName.php";
+                if (!empty($updateModel) || empty(is_file($modelFileName))) {
+                    $isModel = @file_put_contents($this->_savePath . "/$modelTableName.php", $modelCode);
+                    $build[($isModel ? 'success' : 'error')][] = $this->_basePath . "/$modelTableName.php";
+                }
+                $modelFiles[$this->_savePath][] = $modelTableName . '.php';
+                $modelFiles[$this->_savePath][] = 'CommandModel.php';
+                $commonFileName = $this->_savePath . "/CommandModel.php";
+                if (empty(is_file($commonFileName))) {
+                    $commonCode = "<?php\r\n\r\n";
+                    $commonCode .= "namespace $this->_namespace;\r\n\r\n";
+                    $commonCode .= "/**\r\n";
+                    $commonCode .= " * 公共Model,不会更新\r\n";
+                    $commonCode .= " */\r\n";
+                    $commonCode .= "class CommandModel extends " . $this->_updateName . "\\Common {\r\n";
+                    $commonCode .= "}";
+                    $isCommon = @file_put_contents($this->_savePath . "/CommandModel.php", $commonCode);
+                    $build[($isCommon ? 'success' : 'error')][] = $this->_basePath . "/CommandModel.php";
+                }
             }
         }
         //删除不存在Model
@@ -370,10 +375,6 @@ class Helper {
         $this->_updateNamespace = $this->_namespace . "\\" . $this->_updateName;
         //更新目录绝对路径
         $this->_updatePath = $this->_savePath . DIRECTORY_SEPARATOR . $this->_updateName;
-        //删除目录
-        static::deleteDir($this->_updatePath);
-        //创造目录
-        static::mkDir($this->_updatePath);
         return $this;
     }
 
